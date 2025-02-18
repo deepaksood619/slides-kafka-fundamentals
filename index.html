@@ -1,54 +1,57 @@
 <!doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>Kafka Fundamentals</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<meta name="description" content="A presentation about Apache Kafka, covering basic knowledge everyone using Kafka for event collaboration should have.">
-		<meta name="author" content="Martin Grotzke, inoio gmbh">
+	<title>Kafka Fundamentals</title>
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/moon.css" id="theme">
+	<meta name="description"
+		content="A presentation about Apache Kafka, covering basic knowledge everyone using Kafka for event collaboration should have.">
+	<meta name="author" content="Martin Grotzke, inoio gmbh">
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/moon.css" id="theme">
 
-		<!-- Printing and PDF exports -->
-		<script>
-      var link = document.createElement( 'link' );
-      link.rel = 'stylesheet';
-      link.type = 'text/css';
-      link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
-      document.getElementsByTagName( 'head' )[0].appendChild( link );
-    </script>
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css">
 
-		<style type="text/css">
-			code  {
-				color: #ccc;
-			}
-		</style>
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
 
-	</head>
-	<body>
+	<style type="text/css">
+		code {
+			color: #ccc;
+		}
+	</style>
 
-		<div class="reveal">
-			<div class="slides">
-				<section>
-					<div style="margin-top: 15%">
+</head>
+
+<body>
+
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<div style="margin-top: 15%">
 					<h1>Kafka Fundamentals</h1>
 					<p>
 						<small>
-							This is about (java) producers, consumers and the cluster itself, i.e. topic partitions, replicas etc.<br/>
-							It's <em>not</em> about e.g. Kafka Connect, Kafka Streams or  3rd party client libraries like spring-kafka or reactor-kafka.
+							This is about producers, consumers and the cluster itself, i.e. topic partitions, replicas
+							etc.<br /><br />
+							It's <em>not</em> about e.g. Kafka Connect, Kafka Streams or 3rd party client libraries like
+							spring-kafka or reactor-kafka.
 						</small>
 					</p>
-					<p><small>(For Kafka 3.x)</small></p>
-					<div style="margin-top: 15%">
-						<small>(if you find a potential improvement please submit a pull request <a href="https://github.com/inoio/slides-kafka-fundamentals/">here</a>)</small>
-					</div>
+					<br />
+					<p><small>Presented By - <a href="https://deepaksood619.github.io/">Deepak Sood</a></small></p>
 					<aside class="notes">
 						<ul>
 							<li>presentation mode = F11</li>
@@ -56,58 +59,60 @@
 							<li>switch tab: CTRL + Tab</li>
 						</ul>
 					</aside>
-				</section>
-				<section>
-					<h2>agenda</h2>
-					<ol>
-						<li>High level overview</li>
-						<li>Kafka cluster</li>
-						<li>Producers</li>
-						<li>Consumers</li>
-						<li>Transactional Messaging</li>
-					</ol>
-				</section>
-				<section>
-					<section>
-						<h2>high level overview</h2>
-					</section>
-					<section>
-						<h3>what is kafka?</h3>
-						<p>Kafka is an event streaming platform, combining three key capabilities:</p>
-						<ol>
-							<li>To <em>publish</em> (write) and <em>subscribe to</em> (read) streams of events</li>
-							<li>To <em>store</em> streams of events durably and reliably for as long as you want</li>
-							<li>To <em>process</em> streams of events as they occur or retrospectively</li>
-						</ol>
-						<aside class="notes">
-							<ul>
-								<li>it's pub/sub, not point to point, i.e. not a message queue</li>
-							</ul>
-							note: source https://kafka.apache.org/intro
-						</aside>
-					</section>
-					<section>
-						<h3>it's a log: an ordered, persistent sequence of events</h3>
-						<div><img src="img/log-of-records.svg" alt="log"></div>
-					</section>
-					<section>
-						<h3>events are organized in topics</h3>
-						<div><img src="img/topics.svg" alt="topics"></div>
-					</section>
-					<section>
-						<h3>topics are split into partitions</h3>
-						<div><img src="img/partitions.svg" alt="partitions"></div>
-					</section>
-					<section>
-						<h3>producers write to topic partitions</h3>
-						<div><img src="img/producer.svg" alt="producer"></div>
-					</section>
-					<section>
-						<h3>consumers read from topic partitions</h3>
-						<div><img src="img/consumer.svg" alt="consumer"></div>
-					</section>
+			</section>
+			<section>
+				<h2>agenda</h2>
+				<ol>
+					<li>High level overview</li>
+					<li>Kafka cluster</li>
+					<li>Producers</li>
+					<li>Consumers</li>
+					<!-- <li>Transactional Messaging</li> -->
+				</ol>
+			</section>
 
-					<!--section>
+			<!-- High level overview -->
+			<section>
+				<section>
+					<h2>high level overview</h2>
+				</section>
+				<section>
+					<h3>what is kafka?</h3>
+					<p>Kafka is an event streaming platform, combining three key capabilities:</p>
+					<ol>
+						<li>To <em>publish</em> (write) and <em>subscribe to</em> (read) streams of events</li>
+						<li>To <em>store</em> streams of events durably and reliably for as long as you want</li>
+						<li>To <em>process</em> streams of events as they occur or retrospectively</li>
+					</ol>
+					<aside class="notes">
+						<ul>
+							<li>it's pub/sub, not point to point, i.e. not a message queue</li>
+						</ul>
+						note: source https://kafka.apache.org/intro
+					</aside>
+				</section>
+				<section>
+					<h3>it's a log: an ordered, persistent sequence of events</h3>
+					<div><img src="img/log-of-records.svg" alt="log"></div>
+				</section>
+				<section>
+					<h3>events are organized in topics</h3>
+					<div><img src="img/topics.svg" alt="topics"></div>
+				</section>
+				<section>
+					<h3>topics are split into partitions</h3>
+					<div><img src="img/partitions.svg" alt="partitions"></div>
+				</section>
+				<section>
+					<h3>producers write to topic partitions</h3>
+					<div><img src="img/producer.svg" alt="producer"></div>
+				</section>
+				<section>
+					<h3>consumers read from topic partitions</h3>
+					<div><img src="img/consumer.svg" alt="consumer"></div>
+				</section>
+
+				<!--section>
 						<h3>Compacted Topics</h3>
 						<div><img width="50%" src="img/compacted-topic.svg" alt="compacted topic"></div>
 						<p><small><code>cleanup.policy=compact</code> (default: "delete")</small></p>
@@ -116,282 +121,353 @@
 						</p>
 					</section-->
 
-					<section>
-						<h3>that's it?</h3>
-					</section>
+				<section>
+					<h3>that's it?</h3>
+				</section>
+			</section>
+
+			<!-- Kafka cluster -->
+			<section>
+				<section>
+					<h2>kafka cluster</h2>
 				</section>
 				<section>
-					<section>
-						<h2>kafka cluster</h2>
-					</section>
-					<section>
-						<h3>replicated logs &mdash; leaders and replicas</h3>
-						<div style="margin-left: -3em"><img width="70%" src="img/leaders-and-replicas.svg" alt="leaders and replicas"></div>
-						<aside class="notes">
-							<ul style="font-size: 90%">
-								<li>Each partition is replicated across a configurable number of servers for fault-tolerance. Each of these replicas is designated as either a leader or a follower.</li>
-								<li>A leader replica is responsible for all read and write requests for a given partition. It receives data from producers, appends it to its local log, and sends the new data to its followers.</li>
-								<li>Follower replicas replicate the leader, they just receive data and maintain a copy of it.</li>
-								<li>Kafka guarantees, that replicas are placed on different brokers</li>
-							</ul>
-						</aside>
-					</section>
-					<section>
-						<h3>replicated logs &mdash; broker (default) config</h3>
-						<div><img width="40%" src="img/leaders-and-replicas-2.svg" alt="leaders and replicas"></div>
-						<div style="font-size: 70%">
-							<ul>
-								<li class="fragment fade-up"><code>num.partitions=3</code> &ndash; default number of log partitions per topic (default: 1)</li>
-								<li class="fragment fade-up"><code>default.replication.factor=3</code> &ndash; default replication factors for automatically created topics (Kafka default: 1, MSK default: 3 for 3-AZ clusters, 2 for 2-AZ clusters)</li>
-								<li class="fragment fade-up"><code>log.retention.hours</code> &ndash; time to keep a log file (default: 168 = 7d)</li>
-								<li class="fragment fade-up"><code>auto.create.topics.enable</code> &ndash; allow automatic topic creation on the broker when subscribing to or assigning a topic (Kafka default: true, MSK default: false)</li>
-							</ul>
-							<p>
-								<small>
-									source:
-									<a href="https://kafka.apache.org/documentation/#config">Kafka config</a>
-									/ <a href="https://docs.aws.amazon.com/msk/latest/developerguide/msk-default-configuration.html">MSK default config</a>
-								</small>
-							</p>
-						</div>
-					</section>
-
-					<section>
-						<h3>replicated logs &mdash; topic creation/config</h3>
-						<div><img width="40%" src="img/leaders-and-replicas-2.svg" alt="leaders and replicas"></div>
-
-						<p>$ bin/kafka-topics.sh --create --topic my-topic \<br/>
-							--partitions 5 \<br/>
-							--replication-factor 3 \<br/>
-							--config retention.ms=864000000
-						</p>
-						<aside class="notes">
-							864000000ms = 10d
-						</aside>
-					</section>
-
-					<section>
-						<h3>replicated logs &mdash; in-sync replicas (ISR)</h3>
-						<div><img src="img/insync-replicas_2.svg" alt="insync-replicas"></div>
-						<div style="font-size: 80%">
-							<ul>
-								<li class="fragment fade-up"><code>min.insync.replicas</code> &ndash; the minimum number of replicas that must acknowledge a write to be considered successful, if used with "<code>acks=all</code>" (Kafka default: 1, MSK default: 2 for 3-AZ clusters, 1 for 2-AZ clusters)</li>
-								<li class="fragment fade-up">
-									A typical scenario would be <code>replication factor 3</code>,
-									<code>min.insync.replicas=2</code>,
-									and produce with <code>acks=all</code>
-								</li>
-							</ul>
-						</div>
-					</section>
-
-					<section>
-						<h3>leader election</h3>
-						<div><img width="60%" src="img/broker-unavailable.svg" alt="broker unavailable"></div>
+					<h3>replicated logs &mdash; leaders and replicas</h3>
+					<div style="margin-left: -3em"><img width="70%" src="img/leaders-and-replicas.svg"
+							alt="leaders and replicas"></div>
+					<aside class="notes">
+						<ul style="font-size: 90%">
+							<li>Each partition is replicated across a configurable number of servers for
+								fault-tolerance. Each of these replicas is designated as either a leader or a follower.
+							</li>
+							<li>A leader replica is responsible for all read and write requests for a given partition.
+								It receives data from producers, appends it to its local log, and sends the new data to
+								its followers.</li>
+							<li>Follower replicas replicate the leader, they just receive data and maintain a copy of
+								it.</li>
+							<li>Kafka guarantees, that replicas are placed on different brokers</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>replicated logs &mdash; broker (default) config</h3>
+					<div><img width="40%" src="img/leaders-and-replicas-2.svg" alt="leaders and replicas"></div>
+					<div style="font-size: 70%">
 						<ul>
-							<li>Is triggered when a leader replica fails, or when a new replica is added to a partition</li>
-							<li>Controlled by the Kafka broker that acts as the (*active) controller for the cluster</li>
+							<li class="fragment fade-up"><code>num.partitions=3</code> &ndash; default number of log
+								partitions per topic (default: 1)</li>
+							<li class="fragment fade-up"><code>default.replication.factor=3</code> &ndash; default
+								replication factors for automatically created topics (Kafka default: 1, MSK default: 3
+								for 3-AZ clusters, 2 for 2-AZ clusters)</li>
+							<li class="fragment fade-up"><code>log.retention.hours</code> &ndash; time to keep a log
+								file (default: 168 = 7d)</li>
+							<li class="fragment fade-up"><code>auto.create.topics.enable</code> &ndash; allow automatic
+								topic creation on the broker when subscribing to or assigning a topic (Kafka default:
+								true, MSK default: false)</li>
 						</ul>
-					</section>
-
-					<section>
-						<h3>leader election - related config</h3>
-						<div>
-							<ul style="font-size: 80%">
-								<li><code>replication.factor</code> &ndash; the more replicas, the more fault-tolerant the partition is</li>
-								<li><code>min.insync.replicas</code> &ndash; helps prevent data loss in case of leader failure</li>
-								<li>
-									<code>unclean.leader.election.enable</code> &ndash; controls whether the leader can be elected from an out-of-sync replica
-									&ndash; if <code>true</code>, availability is preferred over consistency/durability (Kafka default: false, MSK default: true)
-								</li>
-							</ul>
-						</div>
-					</section>
-
-					<section>
-						<h3>that's the cluster (?)</h3>
-					</section>
-
-				</section>
-
-
-				<section>
-					<section>
-						<h2>the java producer</h2>
-					</section>
-					<section style="width: 106%; margin-left: -0.5em">
-						<img style="float: left; padding-right: 0.5em" src="img/producer-flow.svg" width="28%" alt="producer flow" />
-						<h3>java producer overview</h3>
-						<div>
-							<ul style="font-size: 96%">
-								<li>connect to broker(s) and cache metadata</li>
-								<li>
-									send records to broker(s) / leaders
-									<ol>
-										<li>serialize key/value</li>
-										<li>select topic partition to write to</li>
-										<li>maybe compress data</li>
-										<li>buffer/accumulate messages</li>
-										<li>send message batches</li>
-									</ol>
-								</li>
-							</ul>
-
-						</div>
-
-					</section>
-					<section>
-						<h3>connect to broker(s) and cache metadata</h3>
-						<ul style="font-size: 80%">
-							<li><code>bootstrap.servers</code> &ndash; list of host/port pairs for establishing the initial connection to the cluster. Is used to discover the full set of servers/brokers</li>
-							<li>At least 2 are recommended for fault-tolerance</li>
-							<li>The bootstrap server returns list of all brokers in the cluster and all metadata like topics, partitions, partition leader, replication factor etc.</li>
-							<li><code>metadata.max.age.ms</code> &ndash; update metadata even if there's no leadership change happening due to new brokers or topics / partitions (default: 5 min)
-							</li>
-						</ul>
-					</section>
-					<section style="width: 106%; margin-left: -0.5em">
-						<img style="float: left; padding-right: 0.8em" src="img/producerrecord.svg" width="23%" alt="producer record" />
-						<h3>producer record</h3>
-						<div>
-							<ul style="font-size: 90%; width: 70%">
-								<li>If <code>timestamp</code> is not provided, the producer will stamp the record with its current time</li>
-								<li>Headers are useful to additionally describe the message or value, e.g. to allow consumers to decide about the deserializer, or information useful for monitoring</li>
-								<li>Also <code>value</code> can be <code>null</code> &ndash; tombstone for compacted topics</li>
-							</ul>
-						</div>
-					</section>
-					<section>
-						<h3>serialize key/value</h3>
-						<ul style="font-size: 80%">
-							<li><code>key.serializer</code> &ndash; Serializer class for key, e.g. <code>...StringSerializer</code></li>
-							<li><code>value.serializer</code> &ndash; Serializer class for value, e.g. <code>...ByteArraySerializer</code></li>
-							<li>Not covered here: <a href="https://docs.confluent.io/platform/current/schema-registry/index.html">Confluent Schema Registry</a></li>
-						</ul>
-					</section>
-					<section>
-						<h3>select topic partition</h3>
-						<img src="img/select-partition.svg" width="80%" alt="select partition" />
-						<p style="font-size: 60%">Messages with the same key are written to the same partition &ndash; ordering is provided</p>
-						<aside class="notes">
-							<ul>
-								<li>Changing the number of partitions at runtime affects ordering!</li>
-							</ul>
-						</aside>
-					</section>
-					<section>
-						<h3>buffer/accumulate messages</h3>
-						<img src="img/producer-buffer.svg" width="100%" alt="producer buffer" />
-						<p style="font-size: 60%">The <code>send()</code> method is asynchronous, it adds the record to a buffer of pending record sends and immediately returns. This allows the producer to batch together individual records for efficiency.</p>
-					</section>
-					<section>
-						<h3>buffer/accumulate messages (config)</h3>
-						<img style="margin-top: 0px" src="img/producer-buffer.svg" width="40%" alt="producer buffer" />
-						<ul style="font-size: 70%">
-							<li><code>batch.size</code> &ndash; batch size in bytes, i.e. the upper bound of the batch size to be sent (default: 16 kB)</li>
-							<li><code>linger.ms</code> &ndash; time to give for batches to fill, to make batching more likely even under moderate load (default: 0)</li>
-							<li><code>buffer.memory</code> &ndash; the total amount of memory available for buffering. If records are sent faster than they can be transmitted to the server this buffer space will be exhausted (default: 32 MB)</li>
-							<li><code>max.block.ms</code> &ndash; max time to block <code>send()</code> calls when the buffer space is exhausted, after which a <code>TimeoutException</code> is thrown (default: 1 min)</li>
-						</ul>
-						<aside class="notes">
-							<ul>
-								<li>batch.size
-									<ul>
-										<li>Requests sent to brokers will contain multiple batches, one for each partition with data available to be sent.</li>
-										<li>A small batch size will make batching less common and may reduce throughput (a batch size of zero will disable batching entirely).</li>
-										<li>A very large batch size may use memory a bit more wastefully as we will always allocate a buffer of the specified batch size in anticipation of additional records.</li>
-									</ul>
-								</li>
-							</ul>
-						</aside>
-					</section>
-					<section>
-						<h3>send message batches</h3>
-						<img src="img/producer-sender-thread.svg" width="80%" alt="producer sender thread" />
-						<p style="font-size: 60%">Batches are grouped by broker and sent if either <code>batch.size</code> or <code>linger.ms</code> is reached.</p>
-					</section>
-					<section>
-						<h3>send message batches in parallel</h3>
-						<img src="img/producer-sender-thread_2.svg" width="75%" alt="producer parallel requests" />
-						<p style="font-size: 60%"><code>max.in.flight.requests.per.connection</code> controls the number of messages to be sent without any acknowledgment (default: 5)</p>
-					</section>
-					<section>
-						<h3>message batch send failures</h3>
-						<img src="img/producer-sender-thread_3.svg" width="75%" alt="producer request fails" />
-						<p style="font-size: 60%">With <code>max.in.flight.requests.per.connection > 1</code> there could be gaps if a request fails</p>
-					</section>
-					<section>
-						<h3>handling send failures (retries)</h3>
-						<img src="img/producer-sender-thread_4.svg" style="margin-top: 0px" width="70%" alt="producer request retries" />
-						<ul style="font-size: 60%">
-							<li><code>retries</code> &ndash; number of times to resend a failed request (default: <code>Integer.MAX_VALUE</code>)</li>
-							<li><code>request.timeout.ms</code> &ndash; max time the client will wait for the response (default: 30 sec)</li>
-							<li><code>delivery.timeout.ms</code> &ndash; max time for <code>send()</code> to complete (default: 2 min)</li>
-							<li>Note: with <code>max.in.flight.requests.per.connection > 1</code> and <code>retries > 0</code> message reordering could occur</li>
-						</ul>
-					</section>
-					<section>
-						<h3>handling send failures (retries)</h3>
-						<img src="img/producer-sender-thread_5.svg" width="70%" alt="producer request retries with guaranteed ordering" />
-						<p style="font-size: 60%">
-							To allow <code>retries</code> and prevent message reordering set <code>max.in.flight.requests.per.connection = 1</code>
+						<p>
+							<small>
+								source:
+								<a href="https://kafka.apache.org/documentation/#config">Kafka config</a>
+								/ <a
+									href="https://docs.aws.amazon.com/msk/latest/developerguide/msk-default-configuration.html">MSK
+									default config</a>
+							</small>
 						</p>
-					</section>
-					<section>
-						<h3>send failure - duplicates</h3>
-						<img src="img/producer-sender-thread_6.svg" width="70%" alt="producer send failure duplicates" />
-						<p style="font-size: 60%">
-							If the response gets lost, enabled <code>retries</code> could lead to duplicate messages <br/>(<em>at-least-once</em> delivery semantics)
-						</p>
-					</section>
-					<section>
-						<h3>idempotent producer</h3>
-						<img src="img/producer-sender-thread_7.svg" style="margin-top: 0px" width="70%" alt="idempotent producer" />
-						<ul style="font-size: 60%">
-							<li>
-								<code>enable.idempotence</code> &ndash; prevents message duplication and reordering for a single producer (!),
-								to achieve <em>exactly-once</em> delivery semantics (default: <code>true</code> for Kafka 3.x)
-							</li>
-							<li>Requires <code>max.in.flight.requests.per.connection &lt;= 5</code>
-								(with message ordering preserved), <code>retries &gt; 0</code> and <code>acks='all'</code></li>
-							<li>If conflicting configurations are set and idempotence is not explicitly enabled, it is disabled. If explicitly enabled and conflicting configs are set, a <code>ConfigException</code> is thrown</li>
-							<li>Application level retries e.g. due to a app/producer crash could still lead to duplicates</li>
-						</ul>
-					</section>
-					<section>
-						<h3>message durability / consistency</h3>
-						<img src="img/producer-acks.svg" style="margin-top: 0px" width="80%" alt="producer acks" />
-						<ul style="font-size: 60%">
-							<li>
-								<code>acks</code> &ndash; number of acknowledgments the producer requires the leader to have received before considering a request complete (default: <code>all</code> for Kafka 3.x)
-							</li>
-							<li><code>acks=0</code> &ndash; do not wait for any acknowledgment</li>
-							<li><code>acks=1</code> &ndash; leader writes the record and responds without awaiting acks from followers</li>
-							<li>
-								<code>acks=all</code> &ndash; leader waits for <code>min.insync.replicas</code> to acknowledge.
-								This guarantees that the record will not be lost as long as at least one in-sync replica remains alive
-							</li>
-						</ul>
-					</section>
-					<section>
-						<h3>that's the producer (?)</h3>
-					</section>
-
+					</div>
 				</section>
 
 				<section>
-					<section>
-						<h2>the java consumer</h2>
-					</section>
-					<section>
-						<h3>java consumer overview</h3>
+					<h3>replicated logs &mdash; topic creation/config</h3>
+					<div><img width="40%" src="img/leaders-and-replicas-2.svg" alt="leaders and replicas"></div>
+
+					<p>$ bin/kafka-topics.sh --create --topic my-topic \<br />
+						--partitions 5 \<br />
+						--replication-factor 3 \<br />
+						--config retention.ms=864000000
+					</p>
+					<aside class="notes">
+						864000000ms = 10d
+					</aside>
+				</section>
+
+				<section>
+					<h3>replicated logs &mdash; in-sync replicas (ISR)</h3>
+					<div><img src="img/insync-replicas_2.svg" alt="insync-replicas"></div>
+					<div style="font-size: 80%">
 						<ul>
+							<li class="fragment fade-up"><code>min.insync.replicas</code> &ndash; the minimum number of
+								replicas that must acknowledge a write to be considered successful, if used with
+								"<code>acks=all</code>" (Kafka default: 1, MSK default: 2 for 3-AZ clusters, 1 for 2-AZ
+								clusters)</li>
+							<li class="fragment fade-up">
+								A typical scenario would be <code>replication factor 3</code>,
+								<code>min.insync.replicas=2</code>,
+								and produce with <code>acks=all</code>
+							</li>
+						</ul>
+					</div>
+				</section>
+
+				<section>
+					<h3>leader election</h3>
+					<div><img width="60%" src="img/broker-unavailable.svg" alt="broker unavailable"></div>
+					<ul>
+						<li>Is triggered when a leader replica fails, or when a new replica is added to a partition</li>
+						<li>Controlled by the Kafka broker that acts as the (*active) controller for the cluster</li>
+					</ul>
+				</section>
+
+				<section>
+					<h3>leader election - related config</h3>
+					<div>
+						<ul style="font-size: 80%">
+							<li><code>replication.factor</code> &ndash; the more replicas, the more fault-tolerant the
+								partition is</li>
+							<li><code>min.insync.replicas</code> &ndash; helps prevent data loss in case of leader
+								failure</li>
+							<li>
+								<code>unclean.leader.election.enable</code> &ndash; controls whether the leader can be
+								elected from an out-of-sync replica
+								&ndash; if <code>true</code>, availability is preferred over consistency/durability
+								(Kafka default: false, MSK default: true)
+							</li>
+						</ul>
+					</div>
+				</section>
+
+				<section>
+					<h3>that's the cluster (?)</h3>
+				</section>
+
+			</section>
+
+			<!-- Producers -->
+			<section>
+				<section>
+					<h2>Producers</h2>
+				</section>
+				<section style="width: 106%; margin-left: -0.5em">
+					<img style="float: left; padding-right: 0.5em" src="img/producer-flow.svg" width="28%"
+						alt="producer flow" />
+					<h3>Producer overview</h3>
+					<div>
+						<ul style="font-size: 96%">
 							<li>connect to broker(s) and cache metadata</li>
-							<li>subscribe to topic(s)</li>
-							<li>join consumer group</li>
-							<li>continuously: poll records from broker(s) and commit offsets</li>
+							<li>
+								send records to broker(s) / leaders
+								<ol>
+									<li>serialize key/value</li>
+									<li>select topic partition to write to</li>
+									<li>maybe compress data</li>
+									<li>buffer/accumulate messages</li>
+									<li>send message batches</li>
+								</ol>
+							</li>
 						</ul>
-						<pre style="width: 100%">
+
+					</div>
+
+				</section>
+				<section>
+					<h3>connect to broker(s) and cache metadata</h3>
+					<ul style="font-size: 80%">
+						<li><code>bootstrap.servers</code> &ndash; list of host/port pairs for establishing the initial
+							connection to the cluster. Is used to discover the full set of servers/brokers</li>
+						<li>At least 2 are recommended for fault-tolerance</li>
+						<li>The bootstrap server returns list of all brokers in the cluster and all metadata like
+							topics, partitions, partition leader, replication factor etc.</li>
+						<li><code>metadata.max.age.ms</code> &ndash; update metadata even if there's no leadership
+							change happening due to new brokers or topics / partitions (default: 5 min)
+						</li>
+					</ul>
+				</section>
+				<section style="width: 106%; margin-left: -0.5em">
+					<img style="float: left; padding-right: 0.8em" src="img/producerrecord.svg" width="23%"
+						alt="producer record" />
+					<h3>producer record</h3>
+					<div>
+						<ul style="font-size: 90%; width: 70%">
+							<li>If <code>timestamp</code> is not provided, the producer will stamp the record with its
+								current time</li>
+							<li>Headers are useful to additionally describe the message or value, e.g. to allow
+								consumers to decide about the deserializer, or information useful for monitoring</li>
+							<li>Also <code>value</code> can be <code>null</code> &ndash; tombstone for compacted topics
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section>
+					<h3>serialize key/value</h3>
+					<ul style="font-size: 80%">
+						<li><code>key.serializer</code> &ndash; Serializer class for key, e.g.
+							<code>...StringSerializer</code></li>
+						<li><code>value.serializer</code> &ndash; Serializer class for value, e.g.
+							<code>...ByteArraySerializer</code></li>
+						<li>Not covered here: <a
+								href="https://docs.confluent.io/platform/current/schema-registry/index.html">Confluent
+								Schema Registry</a></li>
+					</ul>
+				</section>
+				<section>
+					<h3>select topic partition</h3>
+					<img src="img/select-partition.svg" width="80%" alt="select partition" />
+					<p style="font-size: 60%">Messages with the same key are written to the same partition &ndash;
+						ordering is provided</p>
+					<aside class="notes">
+						<ul>
+							<li>Changing the number of partitions at runtime affects ordering!</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>buffer/accumulate messages</h3>
+					<img src="img/producer-buffer.svg" width="100%" alt="producer buffer" />
+					<p style="font-size: 60%">The <code>send()</code> method is asynchronous, it adds the record to a
+						buffer of pending record sends and immediately returns. This allows the producer to batch
+						together individual records for efficiency.</p>
+				</section>
+				<section>
+					<h3>buffer/accumulate messages (config)</h3>
+					<img style="margin-top: 0px" src="img/producer-buffer.svg" width="40%" alt="producer buffer" />
+					<ul style="font-size: 70%">
+						<li><code>batch.size</code> &ndash; batch size in bytes, i.e. the upper bound of the batch size
+							to be sent (default: 16 kB)</li>
+						<li><code>linger.ms</code> &ndash; time to give for batches to fill, to make batching more
+							likely even under moderate load (default: 0)</li>
+						<li><code>buffer.memory</code> &ndash; the total amount of memory available for buffering. If
+							records are sent faster than they can be transmitted to the server this buffer space will be
+							exhausted (default: 32 MB)</li>
+						<li><code>max.block.ms</code> &ndash; max time to block <code>send()</code> calls when the
+							buffer space is exhausted, after which a <code>TimeoutException</code> is thrown (default: 1
+							min)</li>
+					</ul>
+					<aside class="notes">
+						<ul>
+							<li>batch.size
+								<ul>
+									<li>Requests sent to brokers will contain multiple batches, one for each partition
+										with data available to be sent.</li>
+									<li>A small batch size will make batching less common and may reduce throughput (a
+										batch size of zero will disable batching entirely).</li>
+									<li>A very large batch size may use memory a bit more wastefully as we will always
+										allocate a buffer of the specified batch size in anticipation of additional
+										records.</li>
+								</ul>
+							</li>
+						</ul>
+					</aside>
+				</section>
+				<section>
+					<h3>send message batches</h3>
+					<img src="img/producer-sender-thread.svg" width="80%" alt="producer sender thread" />
+					<p style="font-size: 60%">Batches are grouped by broker and sent if either <code>batch.size</code>
+						or <code>linger.ms</code> is reached.</p>
+				</section>
+				<section>
+					<h3>send message batches in parallel</h3>
+					<img src="img/producer-sender-thread_2.svg" width="75%" alt="producer parallel requests" />
+					<p style="font-size: 60%"><code>max.in.flight.requests.per.connection</code> controls the number of
+						messages to be sent without any acknowledgment (default: 5)</p>
+				</section>
+				<section>
+					<h3>message batch send failures</h3>
+					<img src="img/producer-sender-thread_3.svg" width="75%" alt="producer request fails" />
+					<p style="font-size: 60%">With <code>max.in.flight.requests.per.connection > 1</code> there could be
+						gaps if a request fails</p>
+				</section>
+				<section>
+					<h3>handling send failures (retries)</h3>
+					<img src="img/producer-sender-thread_4.svg" style="margin-top: 0px" width="70%"
+						alt="producer request retries" />
+					<ul style="font-size: 60%">
+						<li><code>retries</code> &ndash; number of times to resend a failed request (default:
+							<code>Integer.MAX_VALUE</code>)</li>
+						<li><code>request.timeout.ms</code> &ndash; max time the client will wait for the response
+							(default: 30 sec)</li>
+						<li><code>delivery.timeout.ms</code> &ndash; max time for <code>send()</code> to complete
+							(default: 2 min)</li>
+						<li>Note: with <code>max.in.flight.requests.per.connection > 1</code> and
+							<code>retries > 0</code> message reordering could occur</li>
+					</ul>
+				</section>
+				<section>
+					<h3>handling send failures (retries)</h3>
+					<img src="img/producer-sender-thread_5.svg" width="70%"
+						alt="producer request retries with guaranteed ordering" />
+					<p style="font-size: 60%">
+						To allow <code>retries</code> and prevent message reordering set
+						<code>max.in.flight.requests.per.connection = 1</code>
+					</p>
+				</section>
+				<section>
+					<h3>send failure - duplicates</h3>
+					<img src="img/producer-sender-thread_6.svg" width="70%" alt="producer send failure duplicates" />
+					<p style="font-size: 60%">
+						If the response gets lost, enabled <code>retries</code> could lead to duplicate messages
+						<br />(<em>at-least-once</em> delivery semantics)
+					</p>
+				</section>
+				<section>
+					<h3>idempotent producer</h3>
+					<img src="img/producer-sender-thread_7.svg" style="margin-top: 0px" width="70%"
+						alt="idempotent producer" />
+					<ul style="font-size: 60%">
+						<li>
+							<code>enable.idempotence</code> &ndash; prevents message duplication and reordering for a
+							single producer (!),
+							to achieve <em>exactly-once</em> delivery semantics (default: <code>true</code> for Kafka
+							3.x)
+						</li>
+						<li>Requires <code>max.in.flight.requests.per.connection &lt;= 5</code>
+							(with message ordering preserved), <code>retries &gt; 0</code> and <code>acks='all'</code>
+						</li>
+						<li>If conflicting configurations are set and idempotence is not explicitly enabled, it is
+							disabled. If explicitly enabled and conflicting configs are set, a
+							<code>ConfigException</code> is thrown</li>
+						<li>Application level retries e.g. due to a app/producer crash could still lead to duplicates
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>message durability / consistency</h3>
+					<img src="img/producer-acks.svg" style="margin-top: 0px" width="80%" alt="producer acks" />
+					<ul style="font-size: 60%">
+						<li>
+							<code>acks</code> &ndash; number of acknowledgments the producer requires the leader to have
+							received before considering a request complete (default: <code>all</code> for Kafka 3.x)
+						</li>
+						<li><code>acks=0</code> &ndash; do not wait for any acknowledgment</li>
+						<li><code>acks=1</code> &ndash; leader writes the record and responds without awaiting acks from
+							followers</li>
+						<li>
+							<code>acks=all</code> &ndash; leader waits for <code>min.insync.replicas</code> to
+							acknowledge.
+							This guarantees that the record will not be lost as long as at least one in-sync replica
+							remains alive
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>that's the producer (?)</h3>
+				</section>
+
+			</section>
+
+			<!-- Consumers -->
+			<section>
+				<section>
+					<h2>Consumers</h2>
+				</section>
+				<section>
+					<h3>Consumer overview</h3>
+					<ul>
+						<li>connect to broker(s) and cache metadata</li>
+						<li>subscribe to topic(s)</li>
+						<li>join consumer group</li>
+						<li>continuously: poll records from broker(s) and commit offsets</li>
+					</ul>
+					<pre style="width: 100%">
 							<code data-trim data-noescape>
 								Properties props = new Properties();
 								props.setProperty("bootstrap.servers", "localhost:9092");
@@ -406,195 +482,232 @@
 								}
 							</code>
 						</pre>
-					</section>
-					<section>
-						<h3>consumer offsets</h3>
-						<div>
-							<img src="img/consumer-offsets_2.svg" width="70%" alt="consumer offsets" />
-						</div>
+				</section>
+				<section>
+					<h3>consumer offsets</h3>
+					<div>
+						<img src="img/consumer-offsets_2.svg" width="70%" alt="consumer offsets" />
+					</div>
 
-						<ul style="font-size: 60%">
-							<li>committed offset: where to resume from in the event of a restart</li>
-							<li>
-								<code>auto.offset.reset</code> &ndash; how to behave when no offsets have been committed,
-								or when a committed offset is no longer valid (<code>earliest</code>/<code>latest</code>/<code>none</code>, default: <code>latest</code>)
-							</li>
+					<ul style="font-size: 60%">
+						<li>committed offset: where to resume from in the event of a restart</li>
+						<li>
+							<code>auto.offset.reset</code> &ndash; how to behave when no offsets have been committed,
+							or when a committed offset is no longer valid
+							(<code>earliest</code>/<code>latest</code>/<code>none</code>, default: <code>latest</code>)
+						</li>
+					</ul>
+
+					<aside class="notes">
+						<ul>
+							<li><code>auto.offset.reset=none</code>: throw exception to the consumer if no previous
+								offset is found for the consumer's group</li>
 						</ul>
-
-						<aside class="notes">
-							<ul>
-								<li><code>auto.offset.reset=none</code>: throw exception to the consumer if no previous offset is found for the consumer's group</li>
-							</ul>
-						</aside>
-					</section>
-					<section>
-						<h3>consumer offset management</h3>
-						<ul style="font-size: 74%">
-							<li>
-								The default <code>enable.auto.commit=true</code> means that offsets are committed automatically
-								with <code>auto.commit.interval.ms</code> (default: 5 sec)<br/>
-								<div style="font-size: 80%; background-color: darkslategrey">
-									&#9888;&#65039; For <em>at-least-once</em> delivery you must consume all data returned
-								from <code>poll()</code> before any subsequent calls, or before closing the consumer (otherwise, the
+					</aside>
+				</section>
+				<section>
+					<h3>consumer offset management</h3>
+					<ul style="font-size: 74%">
+						<li>
+							The default <code>enable.auto.commit=true</code> means that offsets are committed
+							automatically
+							with <code>auto.commit.interval.ms</code> (default: 5 sec)<br />
+							<div style="font-size: 80%; background-color: darkslategrey">
+								&#9888;&#65039; For <em>at-least-once</em> delivery you must consume all data returned
+								from <code>poll()</code> before any subsequent calls, or before closing the consumer
+								(otherwise, the
 								committed offset could get ahead of the consumed position)</div>
-							</li>
-							<li>It's also possible to "manually" <code>commitSync</code> or <code>commitAsync</code> an offset
-								<ul>
-									<li>
-										<code>commitSync</code>: the consumer is blocked until the commit request returns successfully,
-										including retries
-									</li>
-									<li>
-										<code>commitAsync</code>: send the commit request and return immediately to process the next message
-										or batch of messages
-									</li>
-								</ul>
-							</li>
-						</ul>
-						<aside class="notes">
-							code source: https://kafka.apache.org/33/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
-						</aside>
-					</section>
-					<section>
-						<h3>consumer offset storage</h3>
-						<img src="img/consumer-committed_offsets.svg" width="45%" alt="consumer committed offsets" />
-						<ul style="font-size: 70%">
-							<li>Kafka stores offsets in a compacted topic called <code>__consumer_offsets</code></li>
-							<li><code>offsets.retention.minutes</code> &ndash; retention period (default: 7 days)</li>
-							<li>
-								Alternative: when processing to an external system, the consumer's offset can be stored together with the output (atomically),
-								to be used with <code>seek(TopicPartition, long)</code> on restart
-							</li>
-						</ul>
-					</section>
-					<section>
-						<h3>consumer offset lags</h3>
-						<img src="img/consumer-offsets_3.svg" width="55%" alt="consumer offset lag" />
-						<ul style="font-size: 65%">
-							<li>With a growing consumer lag eventually messages could get lost</li>
-							<li>Increasing the log retention time could be a temporary workaround</li>
-							<li>Adding consumers (and/or partitions) could increase throughput</li>
-							<li>Increasing fetched batches could increase throughput (with the cost of latency)
-								<ul>
-									<li><code>fetch.max.wait.ms</code> &ndash; sets a maximum threshold for time-based batching (default: 500)</li>
-									<li><code>fetch.min.bytes</code> &ndash; sets a minimum threshold for size-based batching (default: 1)</li>
-								</ul>
-							</li>
-						</ul>
-					</section>
-					<section>
-						<h3>consumer groups</h3>
-						<p style="font-size: 60%">
-							Ensure, that a single topic partition is processed by <em>1</em> consumer of the group.<br/>
-							A consumer group is identified by a group id.
-						</p>
-						<div>
-							<img src="img/consumer-groups_2.svg" width="50%" alt="2 consumer groups" />
-						</div>
-					</section>
-
-					<section>
-						<h3>consumer group rebalancing</h3>
-						<div>
-							<img src="img/consumer-group_1-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em" width="38%" alt="consumer group 1 consumer" />
-							<img src="img/consumer-group_2-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em" width="38%" alt="consumer group 2 consumer" />
-							<img src="img/consumer-group_3-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em; vertical-align: top" width="38%" alt="consumer group 3 consumer" />
-							<img src="img/consumer-group_4-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em; vertical-align: top" width="38%" alt="consumer group 4 consumer" />
-						</div>
-
-						<p style="font-size: 70%">
-							The <em>group coordinator</em> is responsible for managing<br/>
-							<span style="padding: 0.2em">a)</span> group members and
-							<span style="padding: 0.2em">b)</span> their partition assignments.
-						</p>
-
-						<aside class="notes">
+						</li>
+						<li>It's also possible to "manually" <code>commitSync</code> or <code>commitAsync</code> an
+							offset
 							<ul>
-								<li>Rebalancing is orchestrated by the group coordinator, involves communication with all consumers in the group</li>
-								<li>The group coordinator is chosen from <code>__consumer_offsets</code> leaders</li>
-							</ul>
-						</aside>
-					</section>
-
-					<section>
-						<h3>consumer group rebalancing</h3>
-						<div>
-							<img src="img/consumer-group_1-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em" width="25%" alt="consumer group 1 consumer" />
-							<img src="img/consumer-group_2-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em" width="25%" alt="consumer group 2 consumer" />
-						</div>
-
-						<ul style="font-size: 65%">
-							<li>In the past rebalancing was "stop the world", with Kafka 2.4 <em>incremental cooperative rebalancing</em>
-								was introduced to reduce consumption downtime
-							</li>
-							<li>
-								<code>partition.assignment.strategy</code> &ndash; a list of class names, ordered by preference,
-								of supported partition assignment strategies to distribute partition ownership (default: <code>[RangeAssignor, CooperativeStickyAssignor]</code>)
-							</li>
-							<li>
-								I.e. the default config (Kafka 3.3) uses <code>RangeAssignor</code>, but allows upgrading to
-								<code>CooperativeStickyAssignor</code> with just a single rolling bounce (removing <code>RangeAssignor</code> from the list)
-								(see also <a href="https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=177048248">KIP-726</a> to change the default)
-							</li>
-							<li>
-								For newer clusters <code>CooperativeStickyAssignor</code> should be preferred to get cooperative rebalancing
-							</li>
-							<li>
-								A nice explanation / visualization of different strategies can be found in <a href="https://chrzaszcz.dev/2021/09/kafka-assignors/">this blog post</a>
-							</li>
-						</ul>
-					</section>
-					<section>
-						<h3>group management: consumer liveness</h3>
-						<ul style="font-size: 65%">
-							<li>Each member in the group must send heartbeats to the coordinator to indicate its liveness.
-								If no heartbeats are received before the expiration of the configured session timeout, the coordinator
-								will remove this client from the group and initiate a rebalance.
-							</li>
-							<li class="fragment fade-up">
-								<code>session.timeout.ms</code> &ndash; max time that can pass without a heartbeat (default: 45 sec,
-								got increased from 10 sec for 3.0, see <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-735%3A+Increase+default+consumer+session+timeout">KIP-735</a>)
-								<div class="fragment fade-up" style="margin-top: 0.3em; margin-bottom: 0.3em; font-size: 94%; background-color: darkslategrey">
-									&#9888;&#65039; Make sure to <code>close()</code> the consumer on shutdown to keep processing latency low!
-								</div>
-							</li>
-							<li class="fragment fade-up">
-								<code>heartbeat.interval.ms</code> &ndash; time between heartbeats sent to the consumer coordinator;
-								must be &lt; <code>session.timeout.ms</code>, recommended to be &lt; 1/3 of it;
-								also used for discovering that a rebalance is in progress
-								(default: 3 sec)
-							</li>
-							<li class="fragment fade-up">
-								<code>max.poll.interval.ms</code> &ndash; max delay between invocations of <code>poll()</code>.
-								If exceeded, the consumer is considered failed and the group will rebalance (default: 5 min)
-							</li>
-							<li class="fragment fade-up">
-								<code>max.poll.records</code> &ndash; max number of records that <code>poll()</code> will return;
-								because the consumer will only join a rebalance inside <code>poll()</code>,
-								reducing this config reduces the delay of a group rebalance (default: 500)
-							</li>
-						</ul>
-
-						<aside class="notes">
-							<ul>
-								<li><code>session.timeout.ms</code> got increased from 10 to 45 sec with Kafka 3 /
-									<a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-735%3A+Increase+default+consumer+session+timeout">KIP-735</a>
-									to be more tolerant to temporary/spurious member failures
+								<li>
+									<code>commitSync</code>: the consumer is blocked until the commit request returns
+									successfully,
+									including retries
+								</li>
+								<li>
+									<code>commitAsync</code>: send the commit request and return immediately to process
+									the next message
+									or batch of messages
 								</li>
 							</ul>
-						</aside>
-					</section>
-
-					<section>
-						<h3>that's the consumer (?)</h3>
-					</section>
-
+						</li>
+					</ul>
+					<aside class="notes">
+						code source:
+						https://kafka.apache.org/33/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html
+					</aside>
+				</section>
+				<section>
+					<h3>consumer offset storage</h3>
+					<img src="img/consumer-committed_offsets.svg" width="45%" alt="consumer committed offsets" />
+					<ul style="font-size: 70%">
+						<li>Kafka stores offsets in a compacted topic called <code>__consumer_offsets</code></li>
+						<li><code>offsets.retention.minutes</code> &ndash; retention period (default: 7 days)</li>
+						<li>
+							Alternative: when processing to an external system, the consumer's offset can be stored
+							together with the output (atomically),
+							to be used with <code>seek(TopicPartition, long)</code> on restart
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>consumer offset lags</h3>
+					<img src="img/consumer-offsets_3.svg" width="55%" alt="consumer offset lag" />
+					<ul style="font-size: 65%">
+						<li>With a growing consumer lag eventually messages could get lost</li>
+						<li>Increasing the log retention time could be a temporary workaround</li>
+						<li>Adding consumers (and/or partitions) could increase throughput</li>
+						<li>Increasing fetched batches could increase throughput (with the cost of latency)
+							<ul>
+								<li><code>fetch.max.wait.ms</code> &ndash; sets a maximum threshold for time-based
+									batching (default: 500)</li>
+								<li><code>fetch.min.bytes</code> &ndash; sets a minimum threshold for size-based
+									batching (default: 1)</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>consumer groups</h3>
+					<p style="font-size: 60%">
+						Ensure, that a single topic partition is processed by <em>1</em> consumer of the group.<br />
+						A consumer group is identified by a group id.
+					</p>
+					<div>
+						<img src="img/consumer-groups_2.svg" width="50%" alt="2 consumer groups" />
+					</div>
 				</section>
 
 				<section>
+					<h3>consumer group rebalancing</h3>
+					<div>
+						<img src="img/consumer-group_1-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em"
+							width="38%" alt="consumer group 1 consumer" />
+						<img src="img/consumer-group_2-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em"
+							width="38%" alt="consumer group 2 consumer" />
+						<img src="img/consumer-group_3-consumer.svg"
+							style="margin-left: 0.5em; margin-right: 0.5em; vertical-align: top" width="38%"
+							alt="consumer group 3 consumer" />
+						<img src="img/consumer-group_4-consumer.svg"
+							style="margin-left: 0.5em; margin-right: 0.5em; vertical-align: top" width="38%"
+							alt="consumer group 4 consumer" />
+					</div>
 
+					<p style="font-size: 70%">
+						The <em>group coordinator</em> is responsible for managing<br />
+						<span style="padding: 0.2em">a)</span> group members and
+						<span style="padding: 0.2em">b)</span> their partition assignments.
+					</p>
+
+					<aside class="notes">
+						<ul>
+							<li>Rebalancing is orchestrated by the group coordinator, involves communication with all
+								consumers in the group</li>
+							<li>The group coordinator is chosen from <code>__consumer_offsets</code> leaders</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h3>consumer group rebalancing</h3>
+					<div>
+						<img src="img/consumer-group_1-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em"
+							width="25%" alt="consumer group 1 consumer" />
+						<img src="img/consumer-group_2-consumer.svg" style="margin-left: 0.5em; margin-right: 0.5em"
+							width="25%" alt="consumer group 2 consumer" />
+					</div>
+
+					<ul style="font-size: 65%">
+						<li>In the past rebalancing was "stop the world", with Kafka 2.4 <em>incremental cooperative
+								rebalancing</em>
+							was introduced to reduce consumption downtime
+						</li>
+						<li>
+							<code>partition.assignment.strategy</code> &ndash; a list of class names, ordered by
+							preference,
+							of supported partition assignment strategies to distribute partition ownership (default:
+							<code>[RangeAssignor, CooperativeStickyAssignor]</code>)
+						</li>
+						<li>
+							I.e. the default config (Kafka 3.3) uses <code>RangeAssignor</code>, but allows upgrading to
+							<code>CooperativeStickyAssignor</code> with just a single rolling bounce (removing
+							<code>RangeAssignor</code> from the list)
+							(see also <a
+								href="https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=177048248">KIP-726</a>
+							to change the default)
+						</li>
+						<li>
+							For newer clusters <code>CooperativeStickyAssignor</code> should be preferred to get
+							cooperative rebalancing
+						</li>
+						<li>
+							A nice explanation / visualization of different strategies can be found in <a
+								href="https://chrzaszcz.dev/2021/09/kafka-assignors/">this blog post</a>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h3>group management: consumer liveness</h3>
+					<ul style="font-size: 65%">
+						<li>Each member in the group must send heartbeats to the coordinator to indicate its liveness.
+							If no heartbeats are received before the expiration of the configured session timeout, the
+							coordinator
+							will remove this client from the group and initiate a rebalance.
+						</li>
+						<li class="fragment fade-up">
+							<code>session.timeout.ms</code> &ndash; max time that can pass without a heartbeat (default:
+							45 sec,
+							got increased from 10 sec for 3.0, see <a
+								href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-735%3A+Increase+default+consumer+session+timeout">KIP-735</a>)
+							<div class="fragment fade-up"
+								style="margin-top: 0.3em; margin-bottom: 0.3em; font-size: 94%; background-color: darkslategrey">
+								&#9888;&#65039; Make sure to <code>close()</code> the consumer on shutdown to keep
+								processing latency low!
+							</div>
+						</li>
+						<li class="fragment fade-up">
+							<code>heartbeat.interval.ms</code> &ndash; time between heartbeats sent to the consumer
+							coordinator;
+							must be &lt; <code>session.timeout.ms</code>, recommended to be &lt; 1/3 of it;
+							also used for discovering that a rebalance is in progress
+							(default: 3 sec)
+						</li>
+						<li class="fragment fade-up">
+							<code>max.poll.interval.ms</code> &ndash; max delay between invocations of
+							<code>poll()</code>.
+							If exceeded, the consumer is considered failed and the group will rebalance (default: 5 min)
+						</li>
+						<li class="fragment fade-up">
+							<code>max.poll.records</code> &ndash; max number of records that <code>poll()</code> will
+							return;
+							because the consumer will only join a rebalance inside <code>poll()</code>,
+							reducing this config reduces the delay of a group rebalance (default: 500)
+						</li>
+					</ul>
+
+					<aside class="notes">
+						<ul>
+							<li><code>session.timeout.ms</code> got increased from 10 to 45 sec with Kafka 3 /
+								<a
+									href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-735%3A+Increase+default+consumer+session+timeout">KIP-735</a>
+								to be more tolerant to temporary/spurious member failures
+							</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h3>that's the consumer (?)</h3>
+				</section>
+
+			</section>
+
+			<!-- Transactional Messaging -->
+			<!-- <section>
 					<section>
-						<h2>transactional messaging</h2>
+						<h2>Transactional Messaging</h2>
 					</section>
 					<section>
 						<h3>transactional messaging "use cases"</h3>
@@ -786,55 +899,54 @@
 						</ul>
 					</section>
 
+				</section> -->
+
+			<section>
+				<section>
+					<h3>Questions?</h3>
 				</section>
 
 				<section>
-					<section>
-						<div style="margin-top: 30%"></div>
-						<h3>the end</h3>
-						<div style="margin-top: 30%">
-							<small>p.s. if you found a potential improvement please submit a pull request <a href="https://github.com/inoio/slides-kafka-fundamentals/">here</a></small>
-						</div>
-					</section>
-
-					<section>
-						<h3>Further Reading</h3>
-						<p><small>A collection of links that could be of interest</small></p>
-						<ul style="font-size: 70%;">
-							<li>
-								<a href="https://developers.redhat.com/articles/2022/05/03/fine-tune-kafka-performance-kafka-optimization-theorem">
-									Fine-tune Kafka performance with the Kafka optimization theorem
-								</a>
-							</li>
-							<li>
-								<a href="https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/">
-									How to Choose the Number of Topics/Partitions in a Kafka Cluster?
-								</a>
-							</li>
-							<li><a href="https://strimzi.io/blog/2020/10/15/producer-tuning/">Optimizing Kafka producers</a></li>
-							<li><a href="https://strimzi.io/blog/2021/01/07/consumer-tuning/">Optimizing Kafka consumers</a></li>
-						</ul>
-					</section>
+					<h3>Further Reading</h3>
+					<p><small>A collection of links that could be of interest</small></p>
+					<ul style="font-size: 70%;">
+						<li>
+							<a
+								href="https://developers.redhat.com/articles/2022/05/03/fine-tune-kafka-performance-kafka-optimization-theorem">
+								Fine-tune Kafka performance with the Kafka optimization theorem
+							</a>
+						</li>
+						<li>
+							<a href="https://www.confluent.io/blog/how-choose-number-topics-partitions-kafka-cluster/">
+								How to Choose the Number of Topics/Partitions in a Kafka Cluster?
+							</a>
+						</li>
+						<li><a href="https://strimzi.io/blog/2020/10/15/producer-tuning/">Optimizing Kafka producers</a>
+						</li>
+						<li><a href="https://strimzi.io/blog/2021/01/07/consumer-tuning/">Optimizing Kafka consumers</a>
+						</li>
+					</ul>
 				</section>
-
-			</div>
+			</section>
 		</div>
+	</div>
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
-				slideNumber: 'c/t',
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
+			slideNumber: 'c/t',
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+		});
+	</script>
 
-	</body>
+</body>
+
 </html>
